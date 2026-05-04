@@ -9,7 +9,7 @@ cha_skills = ["Deception","Intimidation","Performance","Persuasion"]
 wis_skills = ["Animal Handling", "Insight", "Medicine", "Perception", "Survival"]
 
 
-
+#This call to the LLM consolidates the potential skill proficiencies into a list that the LLM must then choose from
 def get_skills(client: OpenAI, character_sheet: object, prompt: str): 
     system_prompt = """You are an expert Dungeon Master for the game Dungeons and Dragons.
     You exclusively use the 2014 ruleset when making decisions.
@@ -56,6 +56,7 @@ def get_skills(client: OpenAI, character_sheet: object, prompt: str):
     # print("Known Skills: ",known_skills)
     character_sheet["Skills"] = known_skills
 
+#Turn string containing skills into list with skill names formatted
 def list_skills(availableSkills: str):
     skill_list = list()
     for skill in all_skills:
@@ -64,6 +65,7 @@ def list_skills(availableSkills: str):
     return skill_list
 
 
+#Build out the skill modifiers based on ac modifiers and skill proficiencis
 def build_skills(character_sheet: dict):
     char_skills = {skill: 0 for skill in all_skills}
     for skill in character_sheet["Skills"]:

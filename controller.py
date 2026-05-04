@@ -27,6 +27,8 @@ spongebob_prompt = """Spongebob lives in a pineapple under the sea. He is best f
 Spongebob works as a fry cook at the Krusty Krab where he is the best fry cook in all of Bikini Bottom. He always has a smile on his face and tries to make the most out
 of any situation."""
 
+
+# Main flow of the entire system, each function call builds out the character_sheet dict
 def main(prompt):
     client = get_openai_client()
     character_sheet = initial.create_character(client,prompt)
@@ -47,6 +49,7 @@ def main(prompt):
     skills.build_skills(character_sheet)
     print("Skills complete 2")
     
+    #Remove all items in character_sheet that are general to class/race and not reflective of what the character has/owns/wields
     if "Available Subclasses" in character_sheet:
         del character_sheet["Available Subclasses"]
     if "Available Spells" in character_sheet:
@@ -62,6 +65,7 @@ def main(prompt):
     if "Equipment (Race)" in character_sheet:
         del character_sheet["Equipment (Race)"]
     
+    #Save character_sheet to not lose any information
     json_name = f"{character_sheet['name']}.json"
     with open(file=json_name,mode="w",encoding='utf-8',errors='ignore') as file:
         character_sheet_pretty = json.dumps(character_sheet, indent=4)
@@ -71,6 +75,8 @@ def main(prompt):
     final_output = final.create_character(client,character_sheet)
     print("Final complete")
 
+    #Save final md output into file within folder for streamlit app to then pull and return to the user
+    #This method of saving the file and leaving it in the working folder is not great but I'm tired right now
     file_name = f"{character_sheet['name']}.md"
     with open(file=file_name,mode="w",encoding='utf-8',errors='ignore') as file:
         file.write(final_output)

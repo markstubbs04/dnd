@@ -85,7 +85,7 @@ For each required attribute, think through your decision and carefully consider 
 
 model = "gpt-5-mini"
 
-
+#The LLM selects from a list of enums for the majority of its choices, leaving little ambigty about rules. However there is still room for creativity
 def create_character(client: OpenAI, prompt: str) -> object:
     messages = [
         {"role": "system", "content": system_prompt},

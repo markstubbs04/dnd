@@ -6,6 +6,8 @@ headers = {
   'Accept': 'application/json'
 }
 
+# Primary function that builds out character_sheet with new information about the class/race, and also consolidates information that is useful for later
+# calls to the LLM and for later decision making (Spells Known, ASI List, Available Skills)
 def build_character(character_sheet: dict) -> dict:
     char_class = character_sheet["class"]
     level = character_sheet["level"]
@@ -62,7 +64,8 @@ def build_character(character_sheet: dict) -> dict:
 
     final = character_sheet | character_sheet_updates
     return final
-    
+
+#Get all spells for character's current level
 def spells(char_class: str, level: int) -> list:
     #####################  SPELLS AVAILABLE AT CURRENT LEVEL  ###################################
     spells_url = f"https://www.dnd5eapi.co/api/2014/classes/{char_class.lower()}/levels/{level}/spells"
@@ -76,7 +79,7 @@ def spells(char_class: str, level: int) -> list:
     # print("Learnable Spells: ", learnable_spells)
     return learnable_spells
 
-
+# Get all proficiencies related to the characters class and race
 def proficiencies(char_class: str, race: str):
     #####################  PROFICIENCIES  ###################################
     # PROFICIENCIES FROM CLASS
@@ -169,6 +172,7 @@ def general_class_info(char_class: str, level: int) -> dict:
         "Subclasses": subclasses,
     }
 
+# Get racial traits
 def traits(race:str):
     #############################  TRAITS  #############################
     # TRAITS FROM RACE
@@ -181,6 +185,7 @@ def traits(race:str):
     # print("Traits: ", traits_parsed)
     return traits_parsed
 
+# Some starting equipment and skills based on the characters selected origin
 def skills_and_equipment(origin:str):
     #############################  SKILLS  #############################
     background_url = f"https://api.open5e.com/v1/backgrounds/?name={origin}"
@@ -212,7 +217,7 @@ def ability_score_bonuses(ability_scores_dict: dict, bonus_number: int):
     
     return ability_scores_dict
 
-
+# Applies the Ability Score Indexes to the ability scores of the character (applies changes to str, con, dex, etc based on the given modifier list)
 def apply_asi(ability_scores_dict: dict, asi_list: list):
     ability_map = {
         "Strength": "STR",
@@ -240,6 +245,7 @@ def assign_ability_scores(abilityScores: list, abilityScoresBonus: int, asi_list
     ability_scores_dict = ability_score_bonuses(ability_scores_dict, abilityScoresBonus)
     return ability_scores_dict
 
+#Calculate the abiliy score modifiers by applying the formula
 def get_ability_score_modifiers(ability_scores: dict) -> dict:
     ability_score_mod = dict.copy(ability_scores)
     for key in ability_scores.keys():
@@ -248,7 +254,7 @@ def get_ability_score_modifiers(ability_scores: dict) -> dict:
         ability_score_mod[key] = modifier
     return ability_score_mod
 
-
+#Saving throws value changes based on character level
 def saving_throws_value(level):
     if level<5: return 2
     elif level<9: return 3
@@ -259,10 +265,12 @@ def saving_throws_value(level):
 def saving_throws_dict(saving_throws: list, level: int):
     return dict.fromkeys(saving_throws,saving_throws_value(level))
 
+# Calculates passive wisdom (used for idle perception)
 def get_passive_wisdom(ability_scores: dict):
     wisdom_modifier = (int(ability_scores["WIS"]-10))//2
     return 10 + wisdom_modifier 
 
+#Get information about the character based on race
 def get_race_stats(race: str):
     url = f"https://api.open5e.com/v1/races/?name={race}"
     response = requests.request("GET", url, headers=headers, data=payload)

@@ -97,6 +97,7 @@ def get_known_spells(client: OpenAI, character_sheet: object, prompt: str):
     character_sheet["Prepared Spells"] = final_spells
     character_sheet["Prepared Cantrips"]= final_cantrips
 
+#Get all potential spells that the character could have, including a description, range, and level
 def build_out_spell_list(spells: list):
     spell_list = list()
     payload = {}
