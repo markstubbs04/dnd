@@ -2,13 +2,13 @@ from openai import OpenAI
 import json
 from dotenv import load_dotenv
 import os
-import initial
-import build_character
-import spells
-import skills
-import equipment
-import weapons
-import final
+import llm_primary.initial as initial
+import util.build_character as build_character
+import util.spells as spells
+import util.skills as skills
+import util.equipment as equipment
+import util.weapons as weapons
+import llm_primary.final as final
 
 
 load_dotenv()
